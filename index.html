@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assistentes Inteligentes - Cliente</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #1e90ff;
+            color: white;
+            padding: 20px;
+        }
+
+        .logo {
+            width: 150px;
+            margin: 10px auto;
+        }
+
+        .assistente {
+            margin: 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        button {
+            background-color: #1e90ff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1c86ee;
+        }
+
+        textarea {
+            width: 100%;
+            height: 100px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="LOGO_DO_CLIENTE.png" alt="Logo do Cliente" class="logo">
+        <h1>Assistentes Inteligentes</h1>
+    </header>
+
+    <div class="assistente">
+        <h2>Extrator de Dados de PDF</h2>
+        <textarea id="inputExtrator" placeholder="Cole o conteúdo do PDF aqui"></textarea>
+        <button onclick="executarAssistente('extrator')">Executar</button>
+        <div id="resultadoExtrator"></div>
+    </div>
+
+    <div class="assistente">
+        <h2>Conciliador Bancário</h2>
+        <textarea id="inputConciliador" placeholder="Cole as transações bancárias aqui"></textarea>
+        <button onclick="executarAssistente('conciliador')">Executar</button>
+        <div id="resultadoConciliador"></div>
+    </div>
+
+    <div class="assistente">
+        <h2>Análise de Indicadores Financeiros</h2>
+        <textarea id="inputIndicadores" placeholder="Cole os indicadores financeiros aqui"></textarea>
+        <button onclick="executarAssistente('indicadores')">Executar</button>
+        <div id="resultadoIndicadores"></div>
+    </div>
+
+    <script>
+        async function executarAssistente(tipo) {
+            let input, resultadoDiv;
+
+            if (tipo === 'extrator') {
+                input = document.getElementById('inputExtrator').value;
+                resultadoDiv = document.getElementById('resultadoExtrator');
+            } else if (tipo === 'conciliador') {
+                input = document.getElementById('inputConciliador').value;
+                resultadoDiv = document.getElementById('resultadoConciliador');
+            } else if (tipo === 'indicadores') {
+                input = document.getElementById('inputIndicadores').value;
+                resultadoDiv = document.getElementById('resultadoIndicadores');
+            }
+
+            const prompt = `Execute o assistente ${tipo} com o seguinte input: ${input}`;
+
+            try {
+                const resposta = await fetch('https://api.openai.com/v1/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer SUA_API_KEY'
+                    },
+                    body: JSON.stringify({
+                        model: 'text-davinci-003',
+                        prompt: prompt,
+                        max_tokens: 300
+                    })
+                });
+
+                const dados = await resposta.json();
+                resultadoDiv.innerHTML = `<p>${dados.choices[0].text}</p>`;
+            } catch (error) {
+                resultadoDiv.innerHTML = `<p>Erro ao executar o assistente: ${error.message}</p>`;
+            }
+        }
+    </script>
+</body>
+</html>
